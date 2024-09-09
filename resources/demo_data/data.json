@@ -1,0 +1,72 @@
+{
+  "partner": {
+    "url": "http://example.com",
+    "logo_path": "../resources/demo_data/partner_logo.svg",
+    "logo_type": 1,
+    "country": "USA",
+    "localizations": [
+      {
+        "language": 0,
+        "name": "Name Partner EN"
+      },
+      {
+        "language": 1,
+        "name": "Name Partner UK"
+      }
+    ]
+  },
+  "team_member": [
+    {
+      "photo_path": "../resources/demo_data/team_photo_1.png",
+      "email": "contact1@example.com",
+      "gender": "F",
+      "is_main": true,
+      "localizations": [
+        {
+          "language": 0,
+          "name": "Name TeamMember 1 EN",
+          "title": "Title 1 EN",
+          "experience": "1 year",
+          "caption": "Caption 1: Expert in backend development",
+          "degree": "Degree 1 EN",
+          "institution": "Institution 1"
+        },
+        {
+          "language": 1,
+          "name": "Name TeamMember 1 UK",
+          "title": "Localization Title 1 UK",
+          "experience": "1 year",
+          "caption": "Caption 1: Expert in backend development",
+          "degree": "Degree 1 UK",
+          "institution": "Institution 1 UK"
+        }
+      ]
+    },
+    {
+      "photo_path": "../resources/demo_data/team_photo_2.jpg",
+      "email": "contact2@example.com",
+      "gender": "M",
+      "is_main": false,
+      "localizations": [
+        {
+          "language": 0,
+          "name": "Localization Name 2 EN",
+          "title": "Localization Title 2 EN",
+          "experience": "2 years",
+          "caption": "Caption 2: Specialist in product lifecycle management",
+          "degree": "Degree 2 EN",
+          "institution": "Institution 2 EN"
+        },
+        {
+          "language": 1,
+          "name": "Localization Name 2 UK",
+          "title": "Localization Title 2 UK",
+          "experience": "2 years",
+          "caption": "Caption 2: Specialist in product lifecycle management",
+          "degree": "Degree 2 UK",
+          "institution": "Institution 2 UK"
+        }
+      ]
+    }
+  ]
+}
