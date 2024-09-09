@@ -1,68 +1,44 @@
-import os
-
-from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.models import BaseModel, Image, Partner, PictureType, Team
+from config.settings import get_settings
+from general.util import load_data_from_json_by_path
+from src.general.enums import Language
+from src.general.models import BaseModel
+from src.images.models import DType
+from src.partners import PartnerService
+from src.team_members import TeamMemberService
 
-load_dotenv()
-
-DB_USER = os.getenv('DB_USER')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
-DB_HOST = os.getenv('DB_HOST')
-DB_PORT = os.getenv('DB_PORT')
-DB_NAME = os.getenv('DB_NAME')
-
-engine = create_engine(f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
-engine.echo = True
-BaseModel.metadata.create_all(engine)
-Session = sessionmaker(bind=engine)
-session = Session()
-
-
-def create_image(file_path: str) -> Image:
-    picture_type_index = PictureType.get_picture_type_for_path(file_path).index
-    with open(file_path, "rb") as file:
-        image_data = file.read()
-    return Image(as_bytes=image_data, picture_type=picture_type_index, is_compressed=False)
+SOURCE_LANGUAGE_INDEX = Language.EN.index
 
 
 def main():
-    partner = Partner(
-        name='Example Partner',
-        url='https://example.com',
-        email='contact@example.com',
-        logo=create_image('../images/partner_logo.svg')
-    )
+    print(f"DTypes={DType.values()}")
+    data = load_data_from_json_by_path(f"{get_settings().BASE_RESOURCE_PATH}/demo_data/data.json")
 
-    list_partners = [
-        Team(
-            name='John Doe',
-            title='Software Engineer',
-            experience='5 years',
-            caption='Expert in backend development',
-            photo=create_image('../images/team_photo_1.png'),
-            gender=True,
-            is_main=True,
-            partner=partner
-        ),
-        Team(
-            name='Jane Smith',
-            title='Product Manager',
-            experience='7 years',
-            caption='Specialist in product lifecycle management',
-            photo=create_image('../images/team_photo_2.jpg'),
-            gender=False,
-            is_main=False,
-            partner=partner
-        )]
+    partner_service = PartnerService(session)
+    team_member_service = TeamMemberService(session)
 
-    partner.team_members = list_partners
+    partner = partner_service.create_partner(source_language=SOURCE_LANGUAGE_INDEX, data=data["partner"])
+    session.flush()
+    partner_localizations = [loc for loc in data["partner"]["localizations"]]
+    partner_service.add_localizations(partner.id, partner_localizations)
 
-    session.add(partner)
+    for member in data["team_member"]:
+        team_member = team_member_service.create_team_member(
+            source_language=SOURCE_LANGUAGE_INDEX, partner_id=partner.id, data=member
+        )
+        session.flush()
+        team_member_localizations = [loc for loc in member["localizations"]]
+        team_member_service.add_localizations(team_member.id, team_member_localizations)
     session.commit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+    engine = create_engine(get_settings().get_db_url())
+    engine.echo = True
+    BaseModel.metadata.create_all(engine)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
     main()
