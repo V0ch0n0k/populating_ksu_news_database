@@ -224,10 +224,12 @@ def main():
         members_keys = []
         for partner_member_info in partner_info["people"]:
             if (
-                SELECT_BY_PARTNER_FILE
+                not SELECT_BY_PARTNER_FILE
                 and partner_member_info["translationKey"] not in target_members_initial_data_dict.keys()
             ):
+                print(f"Skipping {partner_member_info['translationKey']}")
                 continue
+
             members_keys.append(partner_member_info["translationKey"])
 
             if target_members_initial_data_dict.get(partner_member_info["translationKey"]) is None:
@@ -277,7 +279,7 @@ def main():
 
 if __name__ == "__main__":
     engine = create_engine(get_settings().get_db_url())
-    # engine.echo = True
+    engine.echo = True
     BaseModel.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
